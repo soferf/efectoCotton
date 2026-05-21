@@ -1,0 +1,421 @@
+/* ============================================================
+   manual.css — User manual styles (manual.html)
+   ============================================================ */
+
+/* ── Layout ───────────────────────────────────────────────── */
+.manual-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 0;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: calc(100vh - 60px);
+}
+
+/* ── Sidebar ──────────────────────────────────────────────── */
+.manual-sidebar {
+  position: sticky;
+  top: 60px;
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border);
+  padding: 24px 0;
+}
+
+.sidebar-title {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  color: var(--cyan);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 0 20px 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+}
+
+.sidebar-nav {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar-nav li a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: all var(--transition);
+  line-height: 1.35;
+}
+
+.sidebar-nav li a .num {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  color: var(--muted);
+  min-width: 18px;
+  flex-shrink: 0;
+}
+
+.sidebar-nav li a:hover {
+  color: var(--white);
+  background: rgba(0,240,255,0.04);
+  border-left-color: var(--cyan-dim);
+}
+
+.sidebar-nav li a.active {
+  color: var(--cyan);
+  background: var(--cyan-dim);
+  border-left-color: var(--cyan);
+}
+
+.sidebar-nav li a.active .num {
+  color: var(--cyan);
+}
+
+/* ── Main content ─────────────────────────────────────────── */
+.manual-content {
+  padding: 40px 60px;
+  max-width: 860px;
+}
+
+/* ── Manual section ───────────────────────────────────────── */
+.manual-section {
+  margin-bottom: 64px;
+  padding-top: 8px;
+  animation: fade-in-up 0.4s ease;
+}
+
+.manual-section:first-child { margin-top: 0; }
+
+.section-number {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  color: var(--magenta);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.manual-section h2 {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--cyan);
+  text-shadow: 0 0 20px var(--cyan-glow);
+  margin-bottom: 20px;
+  line-height: 1.3;
+}
+
+.manual-section h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--white);
+  margin: 24px 0 12px;
+  padding-left: 12px;
+  border-left: 3px solid var(--cyan);
+}
+
+.manual-section p {
+  font-size: 0.92rem;
+  color: rgba(232, 232, 240, 0.85);
+  line-height: 1.8;
+  margin-bottom: 14px;
+}
+
+.manual-section p strong {
+  color: var(--white);
+  font-weight: 600;
+}
+
+.manual-section ul, .manual-section ol {
+  padding-left: 20px;
+  margin-bottom: 14px;
+}
+
+.manual-section li {
+  font-size: 0.9rem;
+  color: rgba(232, 232, 240, 0.8);
+  line-height: 1.7;
+  margin-bottom: 6px;
+}
+
+.manual-section li::marker {
+  color: var(--cyan);
+}
+
+/* ── Info boxes ───────────────────────────────────────────── */
+.info-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  margin: 20px 0;
+  position: relative;
+}
+
+.info-box.highlight {
+  border-color: var(--cyan-dim);
+  background: rgba(0,240,255,0.03);
+}
+
+.info-box.warning {
+  border-color: var(--gold-dim);
+  background: rgba(255,204,0,0.03);
+}
+
+.info-box.example {
+  border-color: var(--violet-dim);
+  background: rgba(155,89,255,0.04);
+}
+
+.info-box-label {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.info-box.highlight .info-box-label { color: var(--cyan); }
+.info-box.warning   .info-box-label { color: var(--gold); }
+.info-box.example   .info-box-label { color: var(--violet); }
+
+/* ── Formula display ──────────────────────────────────────── */
+.formula-block {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(0,240,255,0.15);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  margin: 18px 0;
+  overflow-x: auto;
+}
+
+.formula-block .formula-main {
+  font-family: 'Georgia', serif;
+  font-size: 1.1rem;
+  color: var(--cyan);
+  text-align: center;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.formula-block .formula-desc {
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-align: center;
+  display: block;
+}
+
+/* ── Diagram / illustration boxes ────────────────────────── */
+.diagram-box {
+  background: radial-gradient(ellipse at center, #0a0a2e, #07071a);
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 180px;
+  overflow: hidden;
+}
+
+.diagram-box svg {
+  max-width: 100%;
+}
+
+/* ── Step guide ───────────────────────────────────────────── */
+.step-list {
+  list-style: none;
+  padding: 0;
+  counter-reset: steps;
+}
+
+.step-item {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  counter-increment: steps;
+  padding: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition);
+}
+
+.step-item:hover {
+  border-color: rgba(0,240,255,0.2);
+}
+
+.step-num {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--bg-deep);
+  background: var(--cyan);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-weight: 700;
+}
+
+.step-content h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--white);
+  margin-bottom: 6px;
+}
+
+.step-content p {
+  font-size: 0.84rem;
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── Application cards ───────────────────────────────────── */
+.app-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin: 16px 0;
+}
+
+.app-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  transition: all var(--transition);
+}
+
+.app-card:hover {
+  border-color: var(--cyan-dim);
+  transform: translateY(-2px);
+}
+
+.app-icon {
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.app-card h4 {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--cyan);
+  margin-bottom: 8px;
+}
+
+.app-card p {
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── Quiz / accordion ─────────────────────────────────────── */
+.quiz-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.quiz-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.quiz-question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  cursor: pointer;
+  gap: 12px;
+  transition: background var(--transition);
+}
+
+.quiz-question:hover { background: var(--bg-hover); }
+
+.quiz-q-text {
+  font-size: 0.88rem;
+  color: var(--white);
+  line-height: 1.4;
+  flex: 1;
+}
+
+.quiz-badge {
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  background: var(--magenta-dim);
+  color: var(--magenta);
+  border: 1px solid rgba(255,0,170,0.3);
+  border-radius: 10px;
+  padding: 2px 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.quiz-arrow {
+  color: var(--muted);
+  font-size: 1rem;
+  transition: transform var(--transition);
+  flex-shrink: 0;
+}
+
+.quiz-item.open .quiz-arrow { transform: rotate(180deg); }
+.quiz-item.open { border-color: rgba(0,240,255,0.2); }
+
+.quiz-answer {
+  display: none;
+  padding: 0 18px 16px;
+  border-top: 1px solid var(--border);
+}
+
+.quiz-item.open .quiz-answer { display: block; }
+
+.quiz-answer p {
+  font-size: 0.86rem;
+  color: rgba(232,232,240,0.8);
+  line-height: 1.7;
+  margin-top: 12px;
+}
+
+.quiz-answer .answer-result {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  color: var(--gold);
+  background: var(--gold-dim);
+  border: 1px solid rgba(255,204,0,0.3);
+  border-radius: var(--radius-sm);
+  padding: 6px 14px;
+  margin: 8px 0;
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .manual-layout { grid-template-columns: 1fr; }
+  .manual-sidebar {
+    position: relative;
+    top: 0;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-nav { display: flex; flex-wrap: wrap; padding: 8px; }
+  .sidebar-nav li a { padding: 6px 12px; font-size: 0.75rem; border-left: none; border-bottom: 2px solid transparent; }
+  .manual-content { padding: 24px 20px; }
+}

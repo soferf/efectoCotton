@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title data-i18n="nav_title">Efecto Compton — Simulador</title>
+  <meta name="description" content="Simulador interactivo del Efecto Compton con animaciones, cálculos físicos en tiempo real y gráficas." />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/simulator.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+
+  <!-- Favicon inline SVG -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='8' fill='%23ffcc00'/><circle cx='16' cy='16' r='14' fill='none' stroke='%2300f0ff' stroke-width='1.5'/></svg>" />
+</head>
+<body>
+
+<!-- ── Background particle layer ──────────────────────────── -->
+<canvas id="particle-canvas" aria-hidden="true"></canvas>
+
+<div class="page-wrapper">
+
+  <!-- ── Navbar ──────────────────────────────────────────── -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <a class="navbar-brand" href="index.html">
+      <div class="navbar-logo" aria-hidden="true"></div>
+      <span class="navbar-title" data-i18n="nav_title">Efecto Compton — Simulador</span>
+    </a>
+
+    <ul class="navbar-nav" role="list">
+      <li><a href="index.html" class="active" data-i18n="nav_simulator">Simulador</a></li>
+      <li><a href="manual.html" data-i18n="nav_manual">Manual</a></li>
+      <li>
+        <button id="lang-btn" aria-label="Toggle language" data-i18n="nav_lang_btn">EN</button>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- ── Formula bar ─────────────────────────────────────── -->
+  <div class="formula-bar" aria-label="Compton formula">
+    <span data-i18n="footer_formula">Δλ = λ_c(1 − cosθ)&nbsp;&nbsp;|&nbsp;&nbsp;λ_c = 2.42631 pm</span>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       MAIN SIMULATOR — 3-column layout
+       ═══════════════════════════════════════════════════ -->
+  <main class="sim-layout" role="main">
+
+    <!-- ── LEFT: Control Panel ─────────────────────────── -->
+    <aside class="panel control-panel" aria-label="Control panel">
+      <h2 class="section-title" data-i18n="panel_controls">Panel de Control</h2>
+
+      <!-- Preset radiation sources -->
+      <div>
+        <p class="slider-label" data-i18n="preset_label" style="margin-bottom:10px;">Fuente de Radiación</p>
+        <div class="preset-grid">
+          <button class="preset-btn" data-preset="xray_medical"
+            data-i18n="preset_xray_m">X-ray Médico</button>
+          <button class="preset-btn active" data-preset="xray_hard"
+            data-i18n="preset_xray_h">X-ray Duro</button>
+          <button class="preset-btn" data-preset="gamma_co60"
+            data-i18n="preset_gamma_co">Gamma Co-60</button>
+          <button class="preset-btn" data-preset="gamma_cs137"
+            data-i18n="preset_gamma_cs">Gamma Cs-137</button>
+          <button class="preset-btn" data-preset="custom" style="grid-column:1/-1"
+            data-i18n="preset_custom">Personalizado</button>
+        </div>
+
+        <p id="preset-desc" class="preset-desc" style="margin-top:10px;"
+          data-i18n="desc_xray_h">Cristalografía X · λ₀ = 10 pm · E₀ ≈ 124 keV</p>
+      </div>
+
+      <!-- λ₀ slider -->
+      <div class="slider-group">
+        <div class="slider-header">
+          <label class="slider-label" for="slider-lambda"
+            data-i18n="slider_lambda">Longitud de onda incidente λ₀</label>
+          <span class="slider-value" id="val-lambda">10.000 pm</span>
+        </div>
+        <input type="range" id="slider-lambda"
+          min="0" max="1000" value="667"
+          aria-label="Incident wavelength slider"
+          aria-valuemin="0.1" aria-valuemax="100" />
+      </div>
+
+      <!-- θ slider -->
+      <div class="slider-group">
+        <div class="slider-header">
+          <label class="slider-label" for="slider-theta"
+            data-i18n="slider_theta">Ángulo de dispersión θ</label>
+          <span class="slider-value" id="val-theta" style="color:var(--violet);text-shadow:0 0 10px rgba(155,89,255,0.5)">90°</span>
+        </div>
+        <input type="range" id="slider-theta"
+          min="0" max="180" value="90"
+          aria-label="Scattering angle slider" />
+      </div>
+
+      <!-- Speed slider -->
+      <div class="slider-group">
+        <div class="slider-header">
+          <label class="slider-label" for="slider-speed"
+            data-i18n="slider_speed">Velocidad de animación</label>
+          <span class="slider-value" id="val-speed"
+            style="color:var(--gold);text-shadow:0 0 10px rgba(255,204,0,0.4)">1.0×</span>
+        </div>
+        <input type="range" id="slider-speed"
+          min="0.25" max="3" value="1" step="0.25"
+          aria-label="Animation speed slider" />
+      </div>
+
+      <!-- Action buttons -->
+      <div class="btn-row">
+        <button id="btn-play"  class="btn-control" data-i18n="btn_play">▶ Simular</button>
+        <button id="btn-pause" class="btn-control" data-i18n="btn_pause">⏸ Pausar</button>
+        <button id="btn-reset" class="btn-control" data-i18n="btn_reset">⟳ Reiniciar</button>
+        <button id="btn-step"  class="btn-control" data-i18n="btn_step">⏭ Paso a paso</button>
+      </div>
+
+      <!-- Toggles -->
+      <div class="toggle-group">
+        <div class="toggle-row">
+          <label class="toggle-label" for="toggle-vectors" data-i18n="toggle_vectors">
+            Vectores de momento
+          </label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggle-vectors" checked />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <label class="toggle-label" for="toggle-waves" data-i18n="toggle_waves">
+            Comparación de ondas
+          </label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggle-waves" checked />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <label class="toggle-label" for="toggle-angles" data-i18n="toggle_angles">
+            Mostrar ángulos
+          </label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggle-angles" checked />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── CENTER: Canvas ───────────────────────────────── -->
+    <div class="canvas-column">
+      <div class="canvas-wrapper" role="img" aria-label="Compton scattering simulation">
+        <canvas id="main-canvas"></canvas>
+        <div class="canvas-state-badge" id="state-badge" aria-live="polite">IDLE</div>
+      </div>
+
+      <!-- Compact physics summary below canvas -->
+      <div class="panel" style="padding:14px 20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+          <div style="text-align:center; flex:1;">
+            <div class="text-muted text-sm">λ_c (Compton)</div>
+            <div class="text-mono glow-cyan">2.42631 pm</div>
+          </div>
+          <div style="text-align:center; flex:1;">
+            <div class="text-muted text-sm">m_e c²</div>
+            <div class="text-mono glow-gold">511 keV</div>
+          </div>
+          <div style="text-align:center; flex:1;">
+            <div class="text-muted text-sm">Δλ<sub>max</sub> (θ=180°)</div>
+            <div class="text-mono" style="color:var(--magenta);text-shadow:0 0 12px rgba(255,0,170,0.4)">4.85262 pm</div>
+          </div>
+          <div style="text-align:center; flex:1;">
+            <div class="text-muted text-sm">h / keV·pm</div>
+            <div class="text-mono" style="color:var(--violet);text-shadow:0 0 12px rgba(155,89,255,0.4)">1239.84</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── RIGHT: Results Panel ────────────────────────── -->
+    <aside class="panel results-panel" aria-label="Simulation results" aria-live="polite">
+      <h2 class="section-title" data-i18n="panel_results">Resultados</h2>
+
+      <!-- Incident photon -->
+      <div class="result-card">
+        <span class="result-label" data-i18n="res_lambda0">Longitud de onda incidente</span>
+        <span class="result-value" id="res-lambda0">— pm</span>
+      </div>
+
+      <!-- Scattered photon wavelength -->
+      <div class="result-card">
+        <span class="result-label" data-i18n="res_lambda1">Longitud de onda dispersada</span>
+        <span class="result-value" id="res-lambda1">— pm</span>
+      </div>
+
+      <!-- Compton shift -->
+      <div class="result-card delta">
+        <span class="result-label" data-i18n="res_delta">Desplazamiento Compton Δλ</span>
+        <span class="result-value" id="res-delta" style="color:var(--magenta);text-shadow:0 0 12px rgba(255,0,170,0.4)">— pm</span>
+      </div>
+
+      <!-- Energies row -->
+      <div class="result-grid-2">
+        <div class="result-card">
+          <span class="result-label" data-i18n="res_E0">E₀ fotón</span>
+          <span class="result-value" id="res-E0">—</span>
+        </div>
+        <div class="result-card">
+          <span class="result-label" data-i18n="res_E1">E' dispersado</span>
+          <span class="result-value" id="res-E1">—</span>
+        </div>
+      </div>
+
+      <!-- Electron kinetic energy -->
+      <div class="result-card electron">
+        <span class="result-label" data-i18n="res_Te">Energía cinética e⁻</span>
+        <span class="result-value" id="res-Te" style="color:var(--gold);text-shadow:0 0 12px rgba(255,204,0,0.4)">—</span>
+      </div>
+
+      <!-- Angles row -->
+      <div class="result-grid-2">
+        <div class="result-card angle">
+          <span class="result-label" data-i18n="res_theta">θ fotón</span>
+          <span class="result-value" id="res-theta" style="color:var(--violet);text-shadow:0 0 12px rgba(155,89,255,0.4)">—</span>
+        </div>
+        <div class="result-card angle">
+          <span class="result-label" data-i18n="res_phi">φ electrón</span>
+          <span class="result-value" id="res-phi" style="color:var(--violet);text-shadow:0 0 12px rgba(155,89,255,0.4)">—</span>
+        </div>
+      </div>
+
+      <!-- Energy distribution bar -->
+      <div class="energy-bar-container">
+        <div class="energy-bar-title" data-i18n="res_conservation">Conservación de energía</div>
+        <div class="energy-bar-track" role="progressbar" aria-label="Energy distribution">
+          <div id="bar-photon"   style="width:50%"></div>
+          <div id="bar-electron" style="width:50%"></div>
+        </div>
+        <div class="energy-bar-labels">
+          <div class="bar-label">
+            <div class="bar-dot-cyan"></div>
+            <span class="text-muted text-sm" data-i18n="energy_bar_photon">Fotón dispersado</span>
+            <span id="bar-label-photon" style="color:var(--cyan);font-family:var(--font-display);font-size:0.72rem;margin-left:4px">50%</span>
+          </div>
+          <div class="bar-label">
+            <div class="bar-dot-gold"></div>
+            <span class="text-muted text-sm" data-i18n="energy_bar_electron">Electrón</span>
+            <span id="bar-label-electron" style="color:var(--gold);font-family:var(--font-display);font-size:0.72rem;margin-left:4px">50%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Momentum conservation badge -->
+      <div id="momentum-badge" class="momentum-badge ok" role="status" data-i18n="res_momentum_ok">
+        ✓ Momento conservado
+      </div>
+    </aside>
+
+  </main><!-- end .sim-layout -->
+
+  <!-- ══════════════════════════════════════════════════════
+       CHARTS SECTION
+       ═══════════════════════════════════════════════════ -->
+  <section class="charts-section" aria-label="Interactive graphs">
+    <h2 class="section-title" style="max-width:1600px; margin:0 auto 16px;">
+      Gráficas Interactivas
+    </h2>
+    <p class="text-muted text-sm text-center" style="margin-bottom:20px; max-width:1600px; margin-left:auto; margin-right:auto;">
+      Haz clic en cualquier gráfica para actualizar el ángulo θ en el simulador
+    </p>
+
+    <div class="charts-grid">
+
+      <!-- Chart 1: Δλ vs θ -->
+      <div class="chart-card">
+        <div class="chart-title" data-i18n="chart1_title">Desplazamiento Compton Δλ vs θ</div>
+        <div class="chart-wrapper">
+          <canvas id="chart1" aria-label="Compton shift vs angle graph"></canvas>
+        </div>
+        <p class="chart-hint">
+          Curva universal — independiente de λ₀
+        </p>
+      </div>
+
+      <!-- Chart 2: E'/E₀ vs θ -->
+      <div class="chart-card">
+        <div class="chart-title" data-i18n="chart2_title">Energía fotón dispersado E'/E₀ vs θ</div>
+        <div class="chart-wrapper">
+          <canvas id="chart2" aria-label="Scattered photon energy ratio vs angle"></canvas>
+        </div>
+        <p class="chart-hint">
+          Depende de E₀ — actualiza al cambiar λ₀
+        </p>
+      </div>
+
+      <!-- Chart 3: T_e/E₀ vs θ -->
+      <div class="chart-card">
+        <div class="chart-title" data-i18n="chart3_title">Energía electrón T_e/E₀ vs θ</div>
+        <div class="chart-wrapper">
+          <canvas id="chart3" aria-label="Electron kinetic energy fraction vs angle"></canvas>
+        </div>
+        <p class="chart-hint">
+          T_e = E₀ − E' (conservación de energía)
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── Footer ──────────────────────────────────────────── -->
+  <footer role="contentinfo">
+    <p data-i18n="footer_credit">Simulador del Efecto Compton · Física Cuántica Moderna</p>
+    <p class="formula-footer" data-i18n="footer_formula">
+      Δλ = λ_c(1 − cosθ)&nbsp;&nbsp;|&nbsp;&nbsp;λ_c = 2.42631 pm
+    </p>
+  </footer>
+
+</div><!-- end .page-wrapper -->
+
+<!-- ── Scripts (order matters) ─────────────────────────────── -->
+<script src="lib/chart.min.js"></script>
+<script src="js/physics.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/particles.js"></script>
+<script src="js/canvas-animation.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/simulator.js"></script>
+
+<!-- Inline: dynamic slider track fill + state badge updates -->
+<script>
+(function() {
+  // Update range track fill percentage via CSS custom property
+  function updateTrackFill(input) {
+    const min = parseFloat(input.min) || 0;
+    const max = parseFloat(input.max) || 100;
+    const val = parseFloat(input.value) || 0;
+    const pct = ((val - min) / (max - min)) * 100;
+    input.style.setProperty('--pct', pct + '%');
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('input[type="range"]').forEach(input => {
+      updateTrackFill(input);
+      input.addEventListener('input', () => updateTrackFill(input));
+    });
+
+    // Canvas state badge updater
+    const badge = document.getElementById('state-badge');
+    if (badge) {
+      setInterval(() => {
+        if (typeof ComptonCanvas !== 'undefined') {
+          badge.textContent = ComptonCanvas.getStateName();
+        }
+      }, 200);
+    }
+  });
+})();
+</script>
+
+</body>
+</html>

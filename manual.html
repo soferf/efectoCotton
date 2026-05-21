@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manual de Usuario — Efecto Compton</title>
+  <meta name="description" content="Manual completo del Efecto Compton: historia, física, matemáticas, guía del simulador y aplicaciones reales." />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/manual.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='8' fill='%23ffcc00'/><circle cx='16' cy='16' r='14' fill='none' stroke='%2300f0ff' stroke-width='1.5'/></svg>" />
+</head>
+<body>
+
+<canvas id="particle-canvas" aria-hidden="true"></canvas>
+
+<div class="page-wrapper">
+
+  <!-- ── Navbar ──────────────────────────────────────────── -->
+  <nav class="navbar">
+    <a class="navbar-brand" href="index.html">
+      <div class="navbar-logo"></div>
+      <span class="navbar-title" data-i18n="nav_title">Efecto Compton — Simulador</span>
+    </a>
+    <ul class="navbar-nav">
+      <li><a href="index.html" data-i18n="nav_simulator">Simulador</a></li>
+      <li><a href="manual.html" class="active" data-i18n="nav_manual">Manual</a></li>
+      <li><button id="lang-btn" data-i18n="nav_lang_btn">EN</button></li>
+    </ul>
+  </nav>
+
+  <!-- ── Layout ──────────────────────────────────────────── -->
+  <div class="manual-layout">
+
+    <!-- ── Sidebar navigation ─────────────────────────── -->
+    <aside class="manual-sidebar">
+      <div class="sidebar-title">Manual de Usuario</div>
+      <ul class="sidebar-nav" id="sidebar-nav">
+        <li><a href="#sec-history"><span class="num">01</span> Contexto Histórico</a></li>
+        <li><a href="#sec-concept"><span class="num">02</span> ¿Qué es el Efecto Compton?</a></li>
+        <li><a href="#sec-physics"><span class="num">03</span> Base Física</a></li>
+        <li><a href="#sec-math"><span class="num">04</span> Deducción Matemática</a></li>
+        <li><a href="#sec-howto"><span class="num">05</span> Cómo Usar el Simulador</a></li>
+        <li><a href="#sec-examples"><span class="num">06</span> Ejemplos Prácticos</a></li>
+        <li><a href="#sec-apps"><span class="num">07</span> Aplicaciones Reales</a></li>
+        <li><a href="#sec-quiz"><span class="num">08</span> Autoevaluación</a></li>
+      </ul>
+    </aside>
+
+    <!-- ── Main content ────────────────────────────────── -->
+    <main class="manual-content" id="manual-main">
+
+      <!-- ════════════════════════════════════════════════
+           01  CONTEXTO HISTÓRICO
+           ════════════════════════════════════════════════ -->
+      <section class="manual-section" id="sec-history">
+        <p class="section-number">Sección 01</p>
+        <h2>Contexto Histórico</h2>
+
+        <p>
+          En el año <strong>1923</strong>, el físico estadounidense <strong>Arthur Holly Compton</strong>
+          realizó uno de los experimentos más importantes de la física del siglo XX. Compton
+          bombardeó electrones libres (en grafito) con rayos X de longitud de onda conocida y
+          observó algo completamente inesperado: los rayos X dispersados tenían una longitud de
+          onda <em>mayor</em> que la original, dependiendo del ángulo de dispersión.
+        </p>
+
+        <div class="info-box highlight">
+          <div class="info-box-label">Dato Histórico</div>
+          <p style="margin:0; font-size:0.88rem;">
+            Este resultado era inexplicable con la física clásica, que predecía que los rayos X
+            dispersados debían tener la <em>misma</em> longitud de onda. Compton demostró que la
+            radiación electromagnética se comporta como partículas (fotones) con energía y momento,
+            no sólo como ondas.
+          </p>
+        </div>
+
+        <p>
+          Por este descubrimiento, Arthur Compton recibió el <strong>Premio Nobel de Física en 1927</strong>,
+          compartido con Charles T. R. Wilson. El efecto lleva su nombre en honor a esta contribución
+          fundamental a la física cuántica.
+        </p>
+
+        <h3>Contexto científico de la época</h3>
+        <p>
+          En los años 1920, la física atravesaba una revolución. La teoría cuántica de Planck (1900)
+          había introducido la idea de que la energía se emite en cuantos discretos. Einstein (1905)
+          había explicado el efecto fotoeléctrico postulando que la luz está compuesta de fotones
+          con energía E = hf. Sin embargo, la dualidad onda-partícula de la luz era aún una idea
+          controvertida. El experimento de Compton la confirmó de manera irrefutable.
+        </p>
+
+        <div class="info-box">
+          <div class="info-box-label">Cronología</div>
+          <ul style="margin:0; font-size:0.85rem; line-height:2;">
+            <li><strong>1900</strong> — Planck introduce la cuantización de la energía</li>
+            <li><strong>1905</strong> — Einstein explica el efecto fotoeléctrico con fotones</li>
+            <li><strong>1923</strong> — Compton descubre el efecto que lleva su nombre</li>
+            <li><strong>1924</strong> — De Broglie propone la dualidad onda-partícula para la materia</li>
+            <li><strong>1927</strong> — Nobel de Física a Compton · Inicio de la mecánica cuántica moderna</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════════════════════
+           02  ¿QUÉ ES EL EFECTO COMPTON?
+           ════════════════════════════════════════════════ -->
+      <section class="manual-section" id="sec-concept">
+        <p class="section-number">Sección 02</p>
+        <h2>¿Qué es el Efecto Compton?</h2>
+
+        <p>
+          El <strong>Efecto Compton</strong> es la dispersión inelástica de un fotón de alta energía
+          (rayos X o rayos gamma) por un electrón libre o débilmente ligado. Como resultado de la
+          colisión, el fotón cede parte de su energía al electrón y sale dispersado con una longitud
+          de onda mayor (energía menor) que la original.
+        </p>
+
+        <div class="diagram-box" aria-label="Compton scattering diagram">
+          <!-- SVG inline diagram of Compton scattering -->
+          <svg viewBox="0 0 500 220" width="460" height="200" xmlns="http://www.w3.org/2000/svg">
+            <!-- Background -->
+            <rect width="500" height="220" fill="none"/>
+
+            <!-- Incident photon wave -->
+            <polyline points="20,110 50,95 80,125 110,95 140,125 165,110"
+              stroke="#00f0ff" stroke-width="2" fill="none" opacity="0.9"/>
+            <line x1="20" y1="110" x2="162" y2="110" stroke="#00f0ff" stroke-width="0.5" opacity="0.3"/>
+            <!-- Photon arrow head -->
+            <polygon points="168,110 155,104 155,116" fill="#00f0ff"/>
+
+            <!-- Electron at rest -->
+            <circle cx="190" cy="110" r="14" fill="url(#egrd)" />
+            <defs>
+              <radialGradient id="egrd" cx="35%" cy="35%">
+                <stop offset="0%" stop-color="#fff7d6"/>
+                <stop offset="60%" stop-color="#ffcc00"/>
+                <stop offset="100%" stop-color="#996600"/>
+              </radialGradient>
+              <!-- Outer glow filter -->
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="3" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+            <circle cx="190" cy="110" r="14" fill="url(#egrd)" filter="url(#glow)"/>
+            <text x="190" y="114" text-anchor="middle" font-size="10" fill="#1a1a1a" font-weight="bold">e⁻</text>
+
+            <!-- Scattered photon wave (going at ~40° above) -->
+            <g transform="translate(190,110) rotate(-40)">
+              <polyline points="18,0 45,-12 72,12 99,-12 126,12 150,0"
+                stroke="#9b59ff" stroke-width="2" fill="none" opacity="0.9"/>
+              <polygon points="154,0 141,-6 141,6" fill="#9b59ff"/>
+            </g>
+
+            <!-- Recoil electron (going at ~30° below) -->
+            <g transform="translate(190,110) rotate(30)">
+              <line x1="18" y1="0" x2="120" y2="0" stroke="#ffcc00" stroke-width="1.5"
+                stroke-dasharray="5,3" opacity="0.7"/>
+              <circle cx="130" cy="0" r="8" fill="url(#egrd2)"/>
+              <defs>
+                <radialGradient id="egrd2" cx="35%" cy="35%">
+                  <stop offset="0%" stop-color="#fff7d6"/>
+                  <stop offset="60%" stop-color="#ffcc00"/>
+                  <stop offset="100%" stop-color="#996600"/>
+                </radialGradient>
+              </defs>
+              <text x="130" y="3" text-anchor="middle" font-size="7" fill="#1a1a1a" font-weight="bold">e⁻</text>
+            </g>
+
+            <!-- Labels -->
+            <text x="90" y="90" fill="#00f0ff" font-size="11" font-family="Georgia,serif">γ (λ₀, E₀)</text>
+            <text x="320" y="65" fill="#9b59ff" font-size="11" font-family="Georgia,serif">γ' (λ', E')</text>
+            <text x="310" y="168" fill="#ffcc00" font-size="11" font-family="Georgia,serif">e⁻ (T_e)</text>
+
+            <!-- Angle arc theta -->
+            <path d="M 218,110 A 28,28 0 0,0 206,93" fill="none"
+              stroke="rgba(255,255,255,0.5)" stroke-width="1.2"/>
+            <text x="234" y="104" fill="rgba(255,255,255,0.7)" font-size="10" font-family="Georgia">θ</text>
+
+            <!-- Angle arc phi -->
+            <path d="M 218,110 A 22,22 0 0,1 208,124" fill="none"
+              stroke="rgba(255,204,0,0.5)" stroke-width="1.2"/>
+            <text x="236" y="126" fill="rgba(255,204,0,0.8)" font-size="10" font-family="Georgia">φ</text>
+
+            <!-- Incident arrow label -->
+            <text x="30" y="145" fill="rgba(200,200,200,0.6)" font-size="9">Fotón incidente</text>
+          </svg>
+        </div>
+
+        <h3>¿Por qué cambia la longitud de onda?</h3>
+        <p>
+          En la física clásica, un electrón que oscila por una onda electromagnética vuelve a emitir
+          radiación a la misma frecuencia. Pero Compton trató la colisión como si fuera entre
+          <strong>dos partículas</strong>: el fotón y el electrón. Al aplicar conservación de
+          energía y de momento lineal (relativistas), se obtiene que el fotón necesariamente
+          sale con mayor longitud de onda porque cedió parte de su energía al electrón.
+        </p>
+
+        <div class="info-box warning">
+          <div class="info-box-label">Punto Clave</div>
+          <p style="margin:0; font-size:0.88rem;">
+            El desplazamiento en longitud de onda <strong>Δλ depende únicamente del ángulo de
+            dispersión θ</strong>, no de la longitud de onda original ni del material. Esto
+            es una firma inequívoca del comportamiento corpuscular de la luz.
+          </p>
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════════════════════
+           03  BASE FÍSICA
+           ════════════════════════════════════════════════ -->
+      <section class="manual-section" id="sec-physics">
+        <p class="section-number">Sección 03</p>
+        <h2>Base Física</h2>
+
+        <h3>Dualidad onda-partícula</h3>
+        <p>
+          La luz exhibe comportamiento de <strong>onda</strong> (difracción, interferencia) y
+          de <strong>partícula</strong> (efecto fotoeléctrico, efecto Compton). Esta dualidad
+          es fundamental en la mecánica cuántica. En el efecto Compton, el fotón actúa como
+          una partícula con energía y momento definidos:
+        </p>
+
+        <div class="formula-block">
+          <span class="formula-main">E = hf = hc/λ</span>
+          <span class="formula-desc">Energía del fotón: h = 6.626×10⁻³⁴ J·s (constante de Planck)</span>
+        </div>
+
+        <div class="formula-block">
+          <span class="formula-main">p = E/c = h/λ</span>
+          <span class="formula-desc">Momento del fotón (el fotón no tiene masa en reposo)</span>
+        </div>
+
+        <h3>El electrón libre</h3>
+        <p>
+          En el análisis de Compton, se asume que el electrón está en reposo antes de la colisión
+          (electrón libre, sin energía de enlace). Esta es una buena aproximación cuando la energía
+          del fotón es mucho mayor que la energía de ionización del electrón (válido para rayos X
+          y gamma).
+        </p>
+
+        <h3>Relatividad especial</h3>
+        <p>
+          El electrón puede alcanzar velocidades relativistas tras la colisión. Por ello, las
+          ecuaciones de conservación deben ser relativistas. La energía total del electrón es:
+        </p>
+
+        <div class="formula-block">
+          <span class="formula-main">E_e = γ m_e c² = m_e c² + T_e</span>
+          <span class="formula-desc">γ = factor de Lorentz · m_e c² = 511 keV (energía en reposo del electrón)</span>
+        </div>
+
+        <h3>Longitud de onda Compton</h3>
+        <p>
+          La escala fundamental de longitud en el efecto Compton es la <strong>longitud de onda
+          Compton del electrón</strong>:
+        </p>
+
+        <div class="formula-block">
+          <span class="formula-main">λ_c = h / (m_e · c) = 2.42631 pm</span>
+          <span class="formula-desc">
+            Esta longitud representa la longitud de onda de un fotón cuya energía es igual
+            a la masa en reposo del electrón (511 keV). Es la escala de longitud de onda
+            donde los efectos cuánticos relativistas son importantes.
+          </span>
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════════════════════
+           04  DEDUCCIÓN MATEMÁTICA
+           ════════════════════════════════════════════════ -->
+      <section class="manual-section" id="sec-math">
+        <p class="section-number">Sección 04</p>
+        <h2>Deducción Matemática Paso a Paso</h2>
+
+        <p>
+          Partimos de dos leyes de conservación aplicadas a la colisión fotón–electrón:
+          <strong>conservación de energía</strong> y <strong>conservación de momento lineal</strong>
+          (en componentes x e y).
+        </p>
+
+        <h3>Paso 1 — Variables del problema</h3>
+        <div class="info-box">
+          <div class="info-box-label">Notación</div>
+          <ul style="margin:0; font-size:0.85rem; line-height:2.2;">
+            <li>λ₀ — longitud de onda del fotón incidente</li>
+            <li>λ' — longitud de onda del fotón dispersado</li>
+            <li>θ — ángulo de dispersión del fotón respecto a la dirección original</li>
+            <li>φ — ángulo de retroceso del electrón respecto a la dirección original</li>
+            <li>E₀ = hc/λ₀ — energía fotón incidente</li>
+            <li>E' = hc/λ' — energía fotón dispersado</li>
+            <li>T_e — energía cinética del electrón tras la colisión</li>
+          </ul>
+        </div>
+
+        <h3>Paso 2 — Conservación de energía</h3>
+        <div class="formula-block">
+          <span class="formula-main">E₀ + m_e c² = E' + (T_e + m_e c²)</span>
+          <span class="formula-desc">⟹ T_e = E₀ − E'</span>
+        </div>
+
+        <h3>Paso 3 — Conservación de momento (x e y)</h3>
+        <div class="formula-block">
+          <span class="formula-main">Eje x: p₀ = p' cosθ + p_e cosφ</span>
+          <span class="formula-main" style="margin-top:6px;">Eje y: 0 = p' sinθ − p_e sinφ</span>
+          <span class="formula-desc">donde p₀ = E₀/c, p' = E'/c (fotones)</span>
+        </div>
+
+        <h3>Paso 4 — Eliminación de φ y p_e</h3>
+        <p>
+          Elevando al cuadrado las ecuaciones de momento y usando la relación relativista
+          E_e² = (p_e c)² + (m_e c²)², se elimina φ y p_e. Después de álgebra, se obtiene
+          la relación entre E₀ y E':
+        </p>
+        <div class="formula-block">
+          <span class="formula-main">E' = E₀ / [1 + (E₀/m_e c²)(1 − cosθ)]</span>
+          <span class="formula-desc">Energía del fotón dispersado en función del ángulo θ</span>
+        </div>
+
+        <h3>Paso 5 — La fórmula de Compton</h3>
+        <p>
+          Expresando lo mismo en términos de longitudes de onda (λ = hc/E):
+        </p>
+        <div class="formula-block" style="border-color:var(--cyan); box-shadow: 0 0 20px rgba(0,240,255,0.1);">
+          <span class="formula-main" style="font-size:1.3rem; color:var(--cyan);">
+            Δλ = λ' − λ₀ = λ_c (1 − cosθ)
+          </span>
+          <span class="formula-desc" style="color:rgba(200,200,200,0.8); margin-top:8px;">
+            <strong>La Fórmula de Compton</strong> · λ_c = h/(m_e c) = 2.42631 pm
+          </span>
+        </div>
+
+        <h3>Paso 6 — Ángulo de retroceso del electrón</h3>
+        <p>
+          De las ecuaciones de momento, despejando φ:
+        </p>
+        <div class="formula-block">
+          <span class="formula-main">cot φ = (1 + E₀/m_e c²) · tan(θ/2)</span>
+          <span class="formula-desc">Para θ = 0°: φ = 90° (el electrón no se mueve). Para θ = 180°: φ = 0°</span>
+        </div>
+
+        <div class="info-box example">
+          <div class="info-box-label">Verificación Rápida</div>
+          <p style="margin:0; font-size:0.88rem;">
+            Para θ = 90°: Δλ = λ_c(1 − cos90°) = λ_c(1 − 0) = <strong>2.42631 pm</strong><br/>
+            Para θ = 180°: Δλ = λ_c(1 − (−1)) = 2λ_c = <strong>4.85262 pm</strong> (máximo)<br/>
+            Para θ = 0°: Δλ = λ_c(1 − 1) = <strong>0</strong> (sin dispersión)
+          </p>
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════════════════════
+           05  CÓMO USAR EL SIMULADOR
+           ════════════════════════════════════════════════ -->
+      <section class="manual-section" id="sec-howto">
+        <p class="section-number">Sección 05</p>
+        <h2>Cómo Usar el Simulador</h2>
+
+        <p>
+          El simulador está diseñado para ser completamente intuitivo. Sigue estos pasos:
+        </p>
+
+        <ol class="step-list">
+          <li class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <h4>Selecciona la fuente de radiación</h4>
+              <p>
+                Haz clic en uno de los botones de preset (X-ray Médico, X-ray Duro, Gamma Co-60,
+                Gamma Cs-137) para configurar automáticamente la longitud de onda incidente λ₀.
+                O selecciona "Personalizado" y ajusta el slider de λ₀ manualmente (rango: 0.1 pm a 100 pm).
+              </p>
+            </div>
+          </li>
+
+          <li class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <h4>Ajusta el ángulo de dispersión θ</h4>
+              <p>
+                Mueve el slider de θ entre 0° y 180°. El panel de resultados a la derecha
+                se actualiza en tiempo real con todos los valores calculados. Las gráficas
+                muestran una línea magenta indicando el ángulo actual.
+              </p>
+            </div>
+          </li>
+
+          <li class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <h4>Lee los resultados</h4>
+              <p>
+                El panel derecho muestra: λ₀ y λ' (longitudes de onda), Δλ (desplazamiento
+                Compton), E₀ y E' (energías del fotón), T_e (energía cinética del electrón),
+                y los ángulos θ y φ. La barra de energía muestra visualmente cómo se reparte
+                la energía entre el fotón dispersado y el electrón.
+              </p>
+            </div>
+          </li>
+
+          <li class="step-item">
+            <div class="step-num">4</div>
+            <div class="step-content">
+              <h4>Ejecuta la animación</h4>
+              <p>
+                Presiona <strong>▶ Simular</strong> para ver la animación completa: el fotón
+                viaja hacia el electrón, ocurre la colisión (destello de impacto), y el fotón
+                dispersado y el electrón de retroceso se separan. Usa <strong>⏸ Pausar</strong>
+                para detener en cualquier momento, <strong>⟳ Reiniciar</strong> para volver al inicio,
+                o <strong>⏭ Paso a paso</strong> para avanzar fase por fase.
+              </p>
+            </div>
+          </li>
+
+          <li class="step-item">
+            <div class="step-num">5</div>
+            <div class="step-content">
+              <h4>Usa los toggles de visualización</h4>
+              <p>
+                Activa o desactiva: <strong>Vectores de momento</strong> (flechas que muestran
+                p₀, p'γ, p_e), <strong>Comparación de ondas</strong> (panel que muestra λ₀ vs λ'
+                lado a lado), y <strong>Mostrar ángulos</strong> (arcos con θ y φ en el canvas).
+              </p>
+            </div>
+          </li>
+
+          <li class="step-item">
+            <div class="step-num">6</div>
+            <div class="step-content">
+              <h4>Interactúa con las gráficas</h4>
+              <p>
+                Las tres gráficas en la parte inferior muestran cómo varían Δλ, E'/E₀ y T_e/E₀
+                con el ángulo. <strong>Haz clic en cualquier punto de una gráfica</strong> para
+                actualizar el ángulo θ directamente en el simulador. La línea magenta punteada
+                indica el ángulo actual seleccionado.
+              </p>
+            </div>
+          </li>
+        </ol>
+
+        <div class="info-box highlight">
+          <div class="info-box-label">Consejo</div>
+          <p style="margin:0; font-size:0.88rem;">
+            Cambia los parámetros mientras la animación está corriendo y el simulador reiniciará
+            automáticamente para mostrar la nueva configuración. Ajusta la velocidad de animación
+            para estudiar el fenómeno a cámara lenta.
+          </p>
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════════════════════
+           06  EJEMPLOS PRÁCTICOS
+           ════════════════════════════════════════════════ -->
+      <section class="manual-section" id="sec-examples">
+        <p class="section-number">Sección 06</p>
+        <h2>Ejemplos Prácticos</h2>
+
+        <div class="info-box example">
+          <div class="info-box-label">Ejemplo 1 — X-ray Médico a θ = 90°</div>
+          <p style="font-size:0.88rem; margin-bottom:8px;">
+            <strong>Configuración:</strong> Preset "X-ray Médico" (λ₀ = 50 pm, E₀ ≈ 24.8 keV) · θ = 90°
+          </p>
+          <p style="font-size:0.88rem; margin-bottom:8px;">
+            <strong>Δλ</strong> = 2.42631 pm &nbsp;→&nbsp; <strong>λ'</strong> = 52.43 pm<br/>
+            <strong>E'</strong> ≈ 23.7 keV &nbsp;→&nbsp; <strong>T_e</strong> ≈ 1.08 keV<br/>
+            <strong>φ</strong> ≈ 45.3°
+          </p>
+          <p style="margin:0; font-size:0.85rem; color:rgba(200,200,200,0.7);">
+            A 90°, el desplazamiento es exactamente λ_c. El electrón recibe sólo el 4.4% de la
+            energía inicial, lo cual es típico de interacciones Compton en diagnóstico médico.
+          </p>
+        </div>
+
+        <div class="info-box example" style="margin-top:16px;">
+          <div class="info-box-label">Ejemplo 2 — Gamma Cs-137 a θ = 180° (retrodispersión)</div>
+          <p style="font-size:0.88rem; margin-bottom:8px;">
+            <strong>Configuración:</strong> Preset "Gamma Cs-137" (λ₀ = 1.85 pm, E₀ ≈ 662 keV) · θ = 180°
+          </p>
+          <p style="font-size:0.88rem; margin-bottom:8px;">
+            <strong>Δλ</strong> = 4.85262 pm (máximo) &nbsp;→&nbsp; <strong>λ'</strong> = 6.70 pm<br/>
+            <strong>E'</strong> ≈ 184.3 keV &nbsp;→&nbsp; <strong>T_e</strong> ≈ 477.7 keV<br/>
+            <strong>φ</strong> = 0° (el electrón sale hacia adelante)
+          </p>
+          <p style="margin:0; font-size:0.85rem; color:rgba(200,200,200,0.7);">
+            La retrodispersión (θ = 180°) maximiza la energía transferida al electrón — un 72% de E₀.
+            Esto se utiliza en espectrometría gamma para identificar el "pico de retrodispersión".
+          </p>
+        </div>
+
+        <div class="info-box example" style="margin-top:16px;">
+          <div class="info-box-label">Ejemplo 3 — Gamma Co-60 a θ = 45°</div>
+          <p style="font-size:0.88rem; margin-bottom:8px;">
+            <strong>Configuración:</strong> Preset "Gamma Co-60" (λ₀ ≈ 1.06 pm, E₀ ≈ 1.17 MeV) · θ = 45°
+          </p>
+          <p style="font-size:0.88rem; margin-bottom:8px;">
+            <strong>Δλ</strong> = 0.711 pm &nbsp;→&nbsp; <strong>λ'</strong> = 1.773 pm<br/>
+            <strong>E'</strong> ≈ 0.702 MeV &nbsp;→&nbsp; <strong>T_e</strong> ≈ 0.468 MeV<br/>
+            <strong>φ</strong> ≈ 64.1°
+          </p>
+          <p style="margin:0; font-size:0.85rem; color:rgba(200,200,200,0.7);">
+            Con fotones de muy alta energía (> m_e c²), incluso a ángulos pequeños el efecto
+            Compton transfiere una fracción significativa de energía al electrón.
+          </p>
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════════════════════
+           07  APLICACIONES REALES
+           ════════════════════════════════════════════════ -->
+      <section class="manual-section" id="sec-apps">
+        <p class="section-number">Sección 07</p>
+        <h2>Aplicaciones Reales</h2>
+
+        <p>
+          El efecto Compton no es sólo un fenómeno de laboratorio; es fundamental en numerosas
+          tecnologías y fenómenos naturales:
+        </p>
+
+        <div class="app-grid">
+          <div class="app-card">
+            <span class="app-icon">🏥</span>
+            <h4>Tomografía computarizada (TAC)</h4>
+            <p>La dispersión Compton es el mecanismo dominante de interacción rayos X–tejido
+            en energías diagnósticas (60–120 keV). Afecta el contraste y la dosis de radiación.</p>
+          </div>
+
+          <div class="app-card">
+            <span class="app-icon">☢️</span>
+            <h4>Radioterapia</h4>
+            <p>Los aceleradores lineales producen fotones de 6–20 MeV. La dispersión Compton
+            deposita energía en los tejidos tumorales, destruyendo células cancerosas.</p>
+          </div>
+
+          <div class="app-card">
+            <span class="app-icon">🔬</span>
+            <h4>Detectores de radiación</h4>
+            <p>Los detectores de centelleo (NaI, BGO) miden el espectro de energía gamma.
+            La forma del espectro Compton permite identificar radioisótopos.</p>
+          </div>
+
+          <div class="app-card">
+            <span class="app-icon">🌌</span>
+            <h4>Astrofísica de alta energía</h4>
+            <p>Los telescopios gamma (COMPTEL, Fermi-LAT) detectan fotones de alta energía
+            del cosmos. El efecto Compton es el mecanismo de absorción principal en nebulosas.</p>
+          </div>
+
+          <div class="app-card">
+            <span class="app-icon">🔐</span>
+            <h4>Seguridad y aduanas</h4>
+            <p>Los escáneres de equipaje usan rayos X de alta energía donde la dispersión
+            Compton permite identificar materiales por su número atómico efectivo.</p>
+          </div>
+
+          <div class="app-card">
+            <span class="app-icon">⚡</span>
+            <h4>Física de plasma</h4>
+            <p>El Compton inverso (electrones energéticos dispersando fotones blandos hacia
+            energías más altas) ocurre en púlsares, quásares y el fondo cósmico de microondas.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════════════════════
+           08  AUTOEVALUACIÓN
+           ════════════════════════════════════════════════ -->
+      <section class="manual-section" id="sec-quiz">
+        <p class="section-number">Sección 08</p>
+        <h2>Autoevaluación</h2>
+
+        <p>
+          Verifica tu comprensión respondiendo estas preguntas. Haz clic en cada pregunta
+          para ver la solución detallada.
+        </p>
+
+        <ul class="quiz-list">
+
+          <li class="quiz-item">
+            <div class="quiz-question" onclick="this.parentElement.classList.toggle('open')">
+              <span class="quiz-q-text">
+                1. ¿Por qué la física clásica <em>no puede</em> explicar el efecto Compton?
+              </span>
+              <span class="quiz-badge">Conceptual</span>
+              <span class="quiz-arrow">▼</span>
+            </div>
+            <div class="quiz-answer">
+              <p>
+                La física clásica predice que cuando una onda electromagnética interactúa con un
+                electrón, el electrón oscila a la <em>misma frecuencia</em> que la onda y re-emite
+                radiación a esa misma frecuencia (dispersión de Thomson). Por tanto, la longitud de
+                onda dispersada debería ser <strong>idéntica</strong> a la incidente, independientemente
+                del ángulo.
+              </p>
+              <p>
+                Sin embargo, Compton observó que λ' > λ₀ y que el desplazamiento dependía del ángulo θ.
+                Esto sólo es explicable si la luz se comporta como <strong>partículas (fotones)</strong>
+                que conservan energía y momento en la colisión con el electrón — un concepto puramente cuántico.
+              </p>
+            </div>
+          </li>
+
+          <li class="quiz-item">
+            <div class="quiz-question" onclick="this.parentElement.classList.toggle('open')">
+              <span class="quiz-q-text">
+                2. Un fotón de λ₀ = 20 pm se dispersa a θ = 60°. ¿Cuál es Δλ y E'?
+              </span>
+              <span class="quiz-badge">Cálculo</span>
+              <span class="quiz-arrow">▼</span>
+            </div>
+            <div class="quiz-answer">
+              <p><strong>Paso 1:</strong> Calcular Δλ</p>
+              <p>Δλ = λ_c(1 − cos60°) = 2.42631 × (1 − 0.5) = <strong>1.2132 pm</strong></p>
+
+              <p><strong>Paso 2:</strong> Longitud de onda dispersada</p>
+              <p>λ' = 20 + 1.2132 = <strong>21.213 pm</strong></p>
+
+              <p><strong>Paso 3:</strong> Energías (usando hc = 1239.84 keV·pm)</p>
+              <p>E₀ = 1239.84 / 20 = <strong>61.99 keV</strong></p>
+              <p>E' = 1239.84 / 21.213 ≈ <strong>58.45 keV</strong></p>
+
+              <div class="answer-result">T_e = 61.99 − 58.45 ≈ 3.54 keV</div>
+            </div>
+          </li>
+
+          <li class="quiz-item">
+            <div class="quiz-question" onclick="this.parentElement.classList.toggle('open')">
+              <span class="quiz-q-text">
+                3. ¿Por qué Δλ no depende de la longitud de onda original λ₀?
+              </span>
+              <span class="quiz-badge">Conceptual</span>
+              <span class="quiz-arrow">▼</span>
+            </div>
+            <div class="quiz-answer">
+              <p>
+                La fórmula Δλ = λ_c(1 − cosθ) contiene solamente constantes fundamentales
+                (h, m_e, c) y el ángulo θ. No aparece λ₀ en ningún lugar.
+              </p>
+              <p>
+                Físicamente, esto se debe a que el electrón actúa como una "masa" que absorbe el
+                impulso del fotón. La cantidad de impulso cedida depende del ángulo pero no de la
+                energía del fotón original. Sin embargo, la <em>fracción</em> de energía transferida
+                (T_e/E₀) <strong>sí depende</strong> de E₀ — los fotones más energéticos transfieren
+                una mayor fracción de su energía al electrón.
+              </p>
+            </div>
+          </li>
+
+          <li class="quiz-item">
+            <div class="quiz-question" onclick="this.parentElement.classList.toggle('open')">
+              <span class="quiz-q-text">
+                4. Para θ = 180°, ¿cuál es el ángulo de retroceso del electrón φ?
+                Explica el resultado físicamente.
+              </span>
+              <span class="quiz-badge">Conceptual + Cálculo</span>
+              <span class="quiz-arrow">▼</span>
+            </div>
+            <div class="quiz-answer">
+              <p>
+                Para θ = 180°, el fotón retrocede exactamente en sentido contrario a su dirección
+                original (retrodispersión). Por conservación de momento en el eje y, si el fotón
+                no tiene componente y, el electrón tampoco puede tenerla. Por tanto:
+              </p>
+              <div class="answer-result">φ = 0°</div>
+              <p>
+                El electrón sale exactamente hacia adelante (misma dirección del fotón incidente),
+                con la máxima energía cinética posible para ese λ₀. Esta es la geometría que maximiza
+                la transferencia de energía al electrón — el "borde Compton" en espectrometría gamma.
+              </p>
+            </div>
+          </li>
+
+          <li class="quiz-item">
+            <div class="quiz-question" onclick="this.parentElement.classList.toggle('open')">
+              <span class="quiz-q-text">
+                5. ¿Qué ocurriría si el efecto Compton no existiera? Menciona dos consecuencias
+                en medicina y una en astrofísica.
+              </span>
+              <span class="quiz-badge">Aplicación</span>
+              <span class="quiz-arrow">▼</span>
+            </div>
+            <div class="quiz-answer">
+              <p><strong>Medicina:</strong></p>
+              <ul>
+                <li>Las imágenes de TAC (tomografía) serían más nítidas pero con mayor dosis de
+                radiación, ya que la dispersión Compton es parte del mecanismo de atenuación que
+                protege tejidos profundos.</li>
+                <li>La radioterapia sería mucho menos efectiva: el depósito de dosis en profundidad
+                que permite tratar tumores profundos depende de la energía cinética que el efecto
+                Compton transfiere a los electrones secundarios, que luego ionizan el tejido tumoral.</li>
+              </ul>
+              <p><strong>Astrofísica:</strong></p>
+              <ul>
+                <li>No existiría el "Compton inverso" que acelera fotones de radio hasta energías
+                de rayos X en púlsares y blazares — estas fuentes astrofísicas no serían detectables
+                en rayos X con los mecanismos actuales.</li>
+              </ul>
+            </div>
+          </li>
+
+        </ul>
+      </section>
+
+      <!-- Back to simulator button -->
+      <div style="margin: 40px 0 20px; text-align:center;">
+        <a href="index.html" style="
+          display: inline-block;
+          font-family: var(--font-display);
+          font-size: 0.82rem;
+          font-weight: 700;
+          letter-spacing: 0.06em;
+          color: var(--bg-deep);
+          background: var(--cyan);
+          padding: 14px 36px;
+          border-radius: var(--radius-md);
+          text-decoration: none;
+          box-shadow: 0 0 24px var(--cyan-glow);
+          transition: all 0.2s ease;
+        " onmouseover="this.style.boxShadow='0 0 40px var(--cyan)'"
+           onmouseout="this.style.boxShadow='0 0 24px rgba(0,240,255,0.35)'">
+          ← Ir al Simulador
+        </a>
+      </div>
+
+    </main>
+  </div><!-- end .manual-layout -->
+
+  <!-- ── Footer ──────────────────────────────────────────── -->
+  <footer>
+    <p data-i18n="footer_credit">Simulador del Efecto Compton · Física Cuántica Moderna</p>
+    <p class="formula-footer">Δλ = λ_c(1 − cosθ)&nbsp;&nbsp;|&nbsp;&nbsp;λ_c = 2.42631 pm</p>
+  </footer>
+
+</div><!-- end .page-wrapper -->
+
+<!-- Scripts -->
+<script src="lib/chart.min.js"></script>
+<script src="js/physics.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/particles.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Particles background
+  const pc = document.getElementById('particle-canvas');
+  if (pc) Particles.init(pc);
+
+  // Language toggle
+  document.getElementById('lang-btn')?.addEventListener('click', () => I18n.toggleLanguage());
+  document.addEventListener('langchange', () => I18n.applyToDOM());
+
+  // Scroll-spy sidebar
+  const sections = document.querySelectorAll('.manual-section');
+  const navLinks = document.querySelectorAll('#sidebar-nav a');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = '#' + entry.target.id;
+        navLinks.forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === id);
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -60% 0px' });
+
+  sections.forEach(sec => observer.observe(sec));
+});
+</script>
+
+</body>
+</html>
